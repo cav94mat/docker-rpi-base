@@ -103,7 +103,7 @@ run() {
     wait $_RUN_PID
 }
 #@func Get the PID associated to the last `run` call.
-run-pid() { echo $_RUN_PID }
+run-pid() { echo $_RUN_PID; }
 #@func Send a signal to the process previously launched with `run`.
 #@syntax [<<options>>] [<signal-name>=SIGTERM]
 run-signal() {
@@ -179,9 +179,11 @@ __main() {
                 echo " --install: Invoke image creation script."
                 echo " --health:  Invoke health-check script."
                 echo ""
+                exit 0
                 ;;
             "-V"|"--version")
                 echo "/bin/run.sh (v. $_VER) by cav94mat"
+                exit 0
                 ;;
             "--")
                 break;
