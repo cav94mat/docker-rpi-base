@@ -50,7 +50,7 @@ v-bind() {
 }
 # @func Fix a volume or directory ownership and permissions
 #  @syntax [<<options>>] <<volumes>>
-#  @flag   -r|--read-only: Mount the volume(s) read-only for the daemon user.
+#  @flag   -r|--read-only: Mount the volume(s) read-only for the box user.
 v-perm() {
     local p_mask="770"
     # Arguments
@@ -77,7 +77,7 @@ v-perm() {
 }
 #@func Run an executable, allowing signal trapping to occur in the background.
 #@syntax [<<flags>>] <program> [<<args>>]
-# @flag  --root:    Execute <program> as user 'root', instead of 'daemon'.
+# @flag  --root:    Execute <program> as user 'root', instead of 'box'.
 run() {
     local uid="$UID"
     # Arguments
@@ -203,10 +203,10 @@ __main() {
             #&& printf '#!/bin/sh\nlogger -s -t "run.sh" "$*"' >/sbin/wlog \
             #&& chmod +x /sbin/wlog || return 101
             
-            # User 'daemon'
-            echo "-- Adding user 'daemon' ($UID:$GID) --" >&2 \
-            && addgroup --gid ${GID} "daemon" \
-            && useradd -d / -s /bin/sh -g "daemon" -u ${UID} "daemon" \
+            # User 'box'
+            echo "-- Adding user 'box' ($UID:$GID) --" >&2 \
+            && addgroup --gid ${GID} "box" \
+            && useradd -d / -s /bin/sh -g "box" -u ${UID} "box" \
             || return 10
             on_install "$@"
             ;;
