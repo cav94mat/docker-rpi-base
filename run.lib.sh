@@ -152,7 +152,7 @@ __error() { wlog "E: $1: $*"; [ "$keep_alive" ] || exit 100; }
 #@syntax <message>
   error() { keep_alive=1 __error "$F_PHASE" "$@"; }
 #@func Invoke 'on_term' and cause script termination
-__on_term() { on_term "$@"; exit $?; }
+__on_term() { _PHASE="on_term"; on_term "$@"; exit $?; }
 
 ## Main entry point ##
 __main() {
@@ -174,6 +174,7 @@ __main() {
     done
     # Code
     if [ "$f_install" ]; then
+        _PHASE="on_install"
         # /sbin/wlog
         #task "Generating /sbin/wlog" \
         #&& printf '#!/bin/sh\nlogger -s -t "run.sh" "$*"' >/sbin/wlog \
@@ -184,10 +185,10 @@ __main() {
         && addgroup --gid ${GID} "daemon" \
         && useradd -d / -s /bin/sh -g "daemon" -u ${UID} "daemon" \
         || return 10
-        
         on_install "$@"
     else
         trap "__on_term" TERM INT
+        _PHASE="run"
         on_run "$@"
     fi
 }

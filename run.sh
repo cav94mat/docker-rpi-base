@@ -34,7 +34,7 @@ on_run() {
     task "Starting"
     ## Main run ##
     
-    run "nginx" #OR: run --root "nginx"
+    run "nginx" # <OR> run --root "nginx"
 }
 # @event    Shutdown procedure (container stop request)
 on_term() {
