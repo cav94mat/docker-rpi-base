@@ -1,5 +1,5 @@
 FROM resin/rpi-raspbian
-MAINTAINER cav94mat
+LABEL maintainer="cav94mat@gmail.com"
 
 ENV UID=1000 GID=1000
 COPY run.sh /bin/run.sh
