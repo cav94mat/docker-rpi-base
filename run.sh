@@ -53,4 +53,4 @@ on_health() {
     return 0; # default: always pass
 }
 # Invoke the run.lib.sh entry point
-source "run.lib.sh"
+source "/lib/run.lib.sh"
