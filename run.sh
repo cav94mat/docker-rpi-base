@@ -15,8 +15,7 @@ on_install() {
     
     ## Installing packages
     task "Installing packages" \
-    && apt-get install 'nginx-light' 'openssl' 'curl' 'sed' 'grep' 'mktemp' \
-                       'git' 'python-pip' \
+    && apt-get install 'curl' 'sed' 'grep' 'mktemp' 'git' \
     || return 21
     
     task "Cleaning APT" \
@@ -26,31 +25,23 @@ on_install() {
 }
 # @event    Container first execution only
 on_init() {
-    task "INIT"
-    ## Mount volumes ##
-    task "Mounting volumes"
-    # Fix perms and ownership
-        v-perm "/conf" "/data"
-        #v-perm -r "/etc"          
-    # Bind volumes
-        #v-bind "/conf/nginx" "/etc/nginx" -- "nginx.conf"    
+    task "INIT" 
     task "/INIT"
 }
 # @event    Main container startup code
 on_run() {
     task "RUN"
-    run "nginx" # <OR> run --root "nginx"
+    error "This image is not meant to be run directly!"
     task "/RUN"
 }
 # @event    Shutdown procedure (container stop request)
 on_term() {
     task "TERM"
-    run-signal -w 'SIGQUIT' # -w: Await process termination; default
     task "/TERM"
 }
 # @event    Health-check is performed.
 on_health() {
-    return 0; # default: always pass
+    return 1; # Always fail if you attempt to run an health-check on rpi-base.
 }
 # Invoke the run.lib.sh entry point
-source "run.lib.sh"
+source "/lib/run.lib.sh"
