@@ -2,7 +2,7 @@ FROM resin/rpi-raspbian
 LABEL maintainer="cav94mat@gmail.com"
 
 ENV UID=1000 GID=1000
-COPY run.sh /bin/run.sh
+COPY run.sh run.lib.sh /bin/run.sh
 
 RUN chmod +x /bin/run.sh && /bin/run.sh --install
 VOLUME /data /conf
