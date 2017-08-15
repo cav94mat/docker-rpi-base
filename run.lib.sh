@@ -52,7 +52,7 @@ v-bind() {
 #  @syntax [<<options>>] <<volumes>>
 #  @flag   -r|--read-only: Mount the volume(s) read-only for the box user.
 v-perm() {
-    local p_mask="770"
+    local p_mask="ug+rw"
     # Arguments
     while [ $# -gt 0 -a "${1:0:1}" = "-" ]; do
         case "$1" in
@@ -60,7 +60,7 @@ v-perm() {
                 break
                 ;;
             "-r"|"--read-only")
-                p_mask="750"
+                p_mask="$p_mask,g-w"
                 ;;
             *)
                 __error "v-perm" "Unsupported option: $1"
