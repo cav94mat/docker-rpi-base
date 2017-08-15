@@ -1,7 +1,4 @@
 #!/bin/bash
-## Globals ##
-PID=
-
 ## Event handlers
 # @event    Called on image creation
 on_install() {
