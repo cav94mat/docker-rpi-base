@@ -12,7 +12,7 @@ _RUN_PID=0
 #  @syntax  [<<flags>>] <volume> <mount-point>
 #  @flag    -b|--backup <filename>: Backup the specified file (use relative paths).
 v-bind() {
-    local preserve = ( )
+    declare -a preserve;
     # Arguments
     while [ $# -gt 0 -a "${1:0:1}" = "-" ]; do
         case "$1" in
