@@ -2,6 +2,7 @@
 ## Event handlers
 # @event    Called on image creation
 on_install() {
+    task "INSTALL"
     ## Integrating APT
     #task "Integrating APT repositories" \
     #&& echo "deb http://ppa.launchpad.net/example/package/ubuntu trusty main" >>/etc/apt/sources.list \
@@ -21,26 +22,35 @@ on_install() {
     task "Cleaning APT" \
     && apt-get clean
     
-    task "Done"
+    task "/INSTALL"
+}
+# @event    Container first execution only
+on_init() {
+    task "INIT"
+    ## Mount volumes ##
+    task "Mounting volumes"
+    # Fix perms and ownership
+        v-perm "/conf" "/data"
+        #v-perm -r "/etc"          
+    # Bind volumes
+        #v-bind "/conf/nginx" "/etc/nginx" -- "nginx.conf"    
+    task "/INIT"
 }
 # @event    Main container startup code
 on_run() {
-    ## Mount volumes ##
-    task "Mounting volumes"
-    v-perm "/conf" "/data"
-    #v-perm -r "/etc"          
-    #v-bind "/conf/nginx" "/etc/nginx" -- "nginx.conf"
- 
-    task "Starting"
-    ## Main run ##
-    
+    task "RUN"
     run "nginx" # <OR> run --root "nginx"
+    task "/RUN"
 }
 # @event    Shutdown procedure (container stop request)
 on_term() {
-    task "Stopping"
-    run-signal -w 'SIGQUIT' # -w: Await process termination
+    task "TERM"
+    run-signal -w 'SIGQUIT' # -w: Await process termination; default
+    task "/TERM"
 }
-
+# @event    Health-check is performed.
+on_health() {
+    return 0; # default: always pass
+}
 # Invoke the run.lib.sh entry point
 source "run.lib.sh"

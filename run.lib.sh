@@ -1,8 +1,11 @@
 #!/bin/bash
+readonly _VER='170815A' # Library version
+
 ## Globals ##
-_PHASE="core"
-_RUN_PROG=
+_PHASE="core"  
+_RUN_PROG=      
 _RUN_PID=0
+
 ## Library functions ##
 
 # @func Bind a volume to the specified path.
@@ -155,13 +158,30 @@ __error() { wlog "E: $1: $*"; [ "$keep_alive" ] || exit 100; }
 __on_term() { _PHASE="on_term"; on_term "$@"; exit $?; }
 
 ## Main entry point ##
+
 __main() {
-    local f_install=
+    local f_mode=""
     # Arguments
     while [ "$#" -gt 0 ]; do
         case "$1" in
             "--install")
-                f_install=1
+                f_mode='install'
+                ;;
+            "--health")
+                f_mode='health'
+                ;;
+            "-?"|"--help")
+                __main -V
+                echo ""
+                echo "Usage:"
+                echo " $0 [--install|--health]"
+                echo ""
+                echo " --install: Invoke image creation script."
+                echo " --health:  Invoke health-check script."
+                echo ""
+                ;;
+            "-V"|"--version")
+                echo "/bin/run.sh (v. $_VER) by cav94mat"
                 ;;
             "--")
                 break;
@@ -173,24 +193,38 @@ __main() {
         shift
     done
     # Code
-    if [ "$f_install" ]; then
-        _PHASE="on_install"
-        # /sbin/wlog
-        #task "Generating /sbin/wlog" \
-        #&& printf '#!/bin/sh\nlogger -s -t "run.sh" "$*"' >/sbin/wlog \
-        #&& chmod +x /sbin/wlog || return 101
-        
-        # User 'daemon'
-        echo "-- Adding user 'daemon' ($UID:$GID) --" >&2 \
-        && addgroup --gid ${GID} "daemon" \
-        && useradd -d / -s /bin/sh -g "daemon" -u ${UID} "daemon" \
-        || return 10
-        on_install "$@"
-    else
-        trap "__on_term" TERM INT
-        _PHASE="run"
-        on_run "$@"
-    fi
+    case "$f_mode" in
+        "install")
+            _PHASE="on_install"
+            # /sbin/wlog
+            #task "Generating /sbin/wlog" \
+            #&& printf '#!/bin/sh\nlogger -s -t "run.sh" "$*"' >/sbin/wlog \
+            #&& chmod +x /sbin/wlog || return 101
+            
+            # User 'daemon'
+            echo "-- Adding user 'daemon' ($UID:$GID) --" >&2 \
+            && addgroup --gid ${GID} "daemon" \
+            && useradd -d / -s /bin/sh -g "daemon" -u ${UID} "daemon" \
+            || return 10
+            on_install "$@"
+            ;;
+        "health")
+            on_health "$@"
+            ;;
+        "")    
+            trap "__on_term" TERM INT
+            if [ ! -f "/.initialized" ]; then
+                _PHASE="init"
+                on_init "$@"
+                date -R >"/.initialized" || error "Could not write '/.initialized'!"
+            fi
+            _PHASE="run"
+            on_run "$@"
+            ;;
+        *)
+            error "Unknown mode."
+            ;;
+    esac
 }
 #alias main='__main "$@"';
 __main "$@"
