@@ -1,4 +1,4 @@
-FROM cav94mat/rpi-base
+FROM resin/rpi-raspbian
 LABEL maintainer="cav94mat@gmail.com"
 
 ENV UID=1000 GID=1000

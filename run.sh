@@ -16,10 +16,14 @@ on_install() {
     ## Installing packages
     task "Installing packages" \
     && apt-get install 'curl' 'sed' 'grep' 'mktemp' 'git' \
-    || return 21
+    || return 22
     
     task "Cleaning APT" \
     && apt-get clean
+    
+    task "Removing 'box' user" \
+    && userdel 'box' && rm -Rf /home/box \
+    || return 23
     
     task "/INSTALL"
 }
