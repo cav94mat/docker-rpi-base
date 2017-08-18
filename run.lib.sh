@@ -70,8 +70,8 @@ v-perm() {
     done
     # Code
     while [ "$#" -gt 0 ]; do
-        chown -R "root:$GID" "/conf"
-        chmod -R "$p_mask" "/conf" 
+        chown -R "root:$GID" "$1"
+        chmod -R "$p_mask" "$1" 
         shift
     done
 }
