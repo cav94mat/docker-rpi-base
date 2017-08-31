@@ -198,16 +198,6 @@ __main() {
     case "$f_mode" in
         "install")
             _PHASE="on_install"
-            # /sbin/wlog
-            #task "Generating /sbin/wlog" \
-            #&& printf '#!/bin/sh\nlogger -s -t "run.sh" "$*"' >/sbin/wlog \
-            #&& chmod +x /sbin/wlog || return 101
-            
-            # User 'box'
-            echo "-- Adding user 'box' ($UID:$GID) --" >&2 \
-            && addgroup --gid ${GID} "box" \
-            && useradd -d / -s /bin/sh -g "box" -u ${UID} "box" \
-            || return 10
             on_install "$@"
             ;;
         "health")
@@ -217,6 +207,15 @@ __main() {
             trap "__on_term" TERM INT
             if [ ! -f "/.initialized" ]; then
                 _PHASE="init"
+                
+                # User 'box'
+                if [ "$UID" != "0" ]; then
+                    echo "-- Adding user 'box' ($UID:$GID) --" >&2 \
+                    && addgroup --gid ${GID} "box" \
+                    && useradd -d / -s /bin/sh -g "box" -u ${UID} "box" \
+                    || return 10
+                fi
+                
                 on_init "$@"
                 date -R >"/.initialized" || error "Could not write '/.initialized'!"
             fi
