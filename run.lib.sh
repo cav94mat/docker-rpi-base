@@ -115,7 +115,7 @@ run-signal() {
             "--")
                 break1
                 ;;
-            "-q"|"--await-termination")
+            "-w"|"--await-termination")
                 await=1
                 ;;
             *)
